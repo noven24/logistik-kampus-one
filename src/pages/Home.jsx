@@ -17,8 +17,8 @@ const SistemPeminjamanLogistikKampus = () => {
   const [loginError, setLoginError] = useState('');
 
   // --- STATE UTAMA APLIKASI ---
-  // UPDATED: Default 'chat' agar langsung ke halaman Chat
-  const [activePage, setActivePage] = useState('chat');
+  // UPDATED: Default 'profile' agar langsung ke halaman Profil
+  const [activePage, setActivePage] = useState('profile');
   const [selectedItem, setSelectedItem] = useState(null);
   const [selectedBundle, setSelectedBundle] = useState(null);
   const [selectedOrg, setSelectedOrg] = useState(null);
