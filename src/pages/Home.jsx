@@ -10,15 +10,15 @@ import {
 
 const SistemPeminjamanLogistikKampus = () => {
   // --- STATE AUTHENTICATION ---
-  // Default true agar langsung masuk (bypass login)
+  // UPDATED: Default true agar langsung masuk (bypass login)
   const [isLoggedIn, setIsLoggedIn] = useState(true);
   const [loginLoading, setLoginLoading] = useState(false);
   const [loginForm, setLoginForm] = useState({ username: '', password: '' });
   const [loginError, setLoginError] = useState('');
 
   // --- STATE UTAMA APLIKASI ---
-  // UPDATED: Default 'notifications' agar langsung ke halaman Notifikasi
-  const [activePage, setActivePage] = useState('notifications');
+  // UPDATED: Default 'home' agar langsung ke halaman Beranda utama
+  const [activePage, setActivePage] = useState('home');
   const [selectedItem, setSelectedItem] = useState(null);
   const [selectedBundle, setSelectedBundle] = useState(null);
   const [selectedOrg, setSelectedOrg] = useState(null);
@@ -30,7 +30,7 @@ const SistemPeminjamanLogistikKampus = () => {
   const [loanStep, setLoanStep] = useState(1);
   const [returnStep, setReturnStep] = useState(1);
 
-  // --- STATE HALAMAN AKTIVITAS ---
+  // --- STATE HALAMAN AKTIVITAS (New Feature) ---
   const [activityTab, setActivityTab] = useState('borrowing'); // 'borrowing' | 'lending'
 
   // --- DATA DUMMY NOTIFIKASI ---
@@ -915,7 +915,7 @@ const SistemPeminjamanLogistikKampus = () => {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
-            <Search size={16} className="absolute left-3 top-2.5 text-gray-400" />
+            <Search size={16} className="absolute left-3 top-3.5 text-gray-400" />
           </div>
           
           <div className="flex items-center gap-3">
