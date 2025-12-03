@@ -10,13 +10,15 @@ import {
 
 const SistemPeminjamanLogistikKampus = () => {
   // --- STATE AUTHENTICATION ---
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  // UPDATED: Default true agar langsung masuk (bypass login)
+  const [isLoggedIn, setIsLoggedIn] = useState(true);
   const [loginLoading, setLoginLoading] = useState(false);
   const [loginForm, setLoginForm] = useState({ username: '', password: '' });
   const [loginError, setLoginError] = useState('');
 
   // --- STATE UTAMA APLIKASI ---
-  const [activePage, setActivePage] = useState('home');
+  // UPDATED: Default 'activity' agar langsung ke halaman Aktivitas Saya
+  const [activePage, setActivePage] = useState('activity');
   const [selectedItem, setSelectedItem] = useState(null);
   const [selectedBundle, setSelectedBundle] = useState(null);
   const [selectedOrg, setSelectedOrg] = useState(null);
@@ -909,7 +911,7 @@ const SistemPeminjamanLogistikKampus = () => {
             <input 
               type="text" 
               placeholder="Cari barang atau paket..." 
-              className="bg-gray-100 text-sm px-4 py-2 pl-10 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 w-64 transition-all"
+              className="bg-gray-100 text-sm px-4 py-2 pl-10 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 w-full lg:w-64 border border-gray-200 shadow-sm"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
