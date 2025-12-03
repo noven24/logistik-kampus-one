@@ -398,7 +398,7 @@ const SistemPeminjamanLogistikKampus = () => {
         <div className="flex items-center gap-8">
           <div className="flex flex-col cursor-pointer" onClick={() => setActivePage('home')}>
             <h1 className="text-2xl font-extrabold text-blue-950 tracking-tight leading-none">
-              Logistik<span className="text-blue-600">Kampus</span>
+              Peminjaman<span className="text-blue-600">Kampus</span>
             </h1>
             <span className="text-[10px] text-gray-500 uppercase tracking-widest font-medium">
               Sistem Peminjaman Terpadu
