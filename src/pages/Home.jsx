@@ -5,7 +5,7 @@ import {
   AlertCircle, Clock, ArrowRightLeft, BoxSelect, X, AlertTriangle, 
   BellRing, Menu, Grid, List, Users, Calendar, Shield, FileText,
   Truck, RotateCcw, Eye, Star, Download, Upload, Handshake, Phone, Mail, Globe,
-  LogIn, Lock, ArrowRight, Loader2, Check, XCircle
+  LogIn, Lock, ArrowRight, Loader2, Check, XCircle, LogOut, Settings, MoreVertical, Send, Paperclip
 } from 'lucide-react';
 
 const SistemPeminjamanLogistikKampus = () => {
@@ -31,6 +31,22 @@ const SistemPeminjamanLogistikKampus = () => {
   // --- STATE HALAMAN AKTIVITAS (New Feature) ---
   const [activityTab, setActivityTab] = useState('borrowing'); // 'borrowing' | 'lending'
 
+  // --- DATA DUMMY NOTIFIKASI ---
+  const notifications = [
+    { id: 1, title: "Peminjaman Disetujui", message: "Permintaan peminjaman 'Sound System 500W' telah disetujui oleh BEM Universitas.", time: "10 menit yang lalu", type: "success", read: false },
+    { id: 2, title: "Pengingat Pengembalian", message: "Jangan lupa kembalikan 'Tenda Regu' besok sebelum pukul 16.00 WIB.", time: "1 jam yang lalu", type: "warning", read: false },
+    { id: 3, title: "Permintaan Masuk Baru", message: "UKM Paduan Suara mengajukan peminjaman alat musik.", time: "2 jam yang lalu", type: "info", read: true },
+    { id: 4, title: "Maintenance Sistem", message: "Sistem akan mengalami maintenance pada hari Sabtu pukul 00.00 - 04.00 WIB.", time: "1 hari yang lalu", type: "system", read: true },
+  ];
+
+  // --- DATA DUMMY CHAT ---
+  const [chats, setChats] = useState([
+    { id: 1, name: "Admin Logistik BEM", message: "Halo, untuk pengambilan barang bisa dilakukan jam 9 ya kak.", time: "09:41", unread: 2, avatar: "A", status: "online" },
+    { id: 2, name: "Ketua Himpunan Komputer", message: "Siap, terima kasih banyak atas bantuannya!", time: "Kemarin", unread: 0, avatar: "H", status: "offline" },
+    { id: 3, name: "Sekretaris UKM Olahraga", message: "Apakah tenda masih tersedia untuk tanggal 25?", time: "Kemarin", unread: 0, avatar: "S", status: "online" },
+  ]);
+  const [activeChat, setActiveChat] = useState(1); // Default chat open
+
   // --- HANDLER LOGIN ---
   const handleLogin = (e) => {
     e.preventDefault();
@@ -50,6 +66,12 @@ const SistemPeminjamanLogistikKampus = () => {
       // Reset scroll saat masuk
       window.scrollTo(0, 0);
     }, 1500);
+  };
+
+  const handleLogout = () => {
+      setIsLoggedIn(false);
+      setActivePage('home');
+      setLoginForm({ username: '', password: '' });
   };
 
   // --- DETEKSI SCROLL UNTUK NAVBAR ---
@@ -587,6 +609,258 @@ const SistemPeminjamanLogistikKampus = () => {
     </div>
   );
 
+  // --- COMPONENT HALAMAN PROFILE ---
+  const ProfilePage = () => (
+    <div className="pt-28 container mx-auto px-6 pb-20 min-h-screen">
+      <div className="max-w-4xl mx-auto">
+        <div className="bg-white rounded-3xl shadow-lg border border-gray-100 overflow-hidden mb-8">
+          <div className="h-40 bg-gradient-to-r from-blue-600 to-indigo-600 relative">
+            <div className="absolute -bottom-16 left-8">
+              <div className="w-32 h-32 bg-white rounded-full p-2 shadow-lg">
+                <div className="w-full h-full bg-blue-100 rounded-full flex items-center justify-center text-4xl font-bold text-blue-600">
+                  US
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="pt-20 px-8 pb-8">
+            <div className="flex justify-between items-start">
+              <div>
+                <h2 className="text-3xl font-bold text-gray-900">UKM Seni Budaya</h2>
+                <p className="text-gray-500">Unit Kegiatan Mahasiswa • Terverifikasi</p>
+              </div>
+              <button className="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-xl font-bold text-sm transition-colors flex items-center gap-2">
+                <Settings size={16} /> Edit Profil
+              </button>
+            </div>
+
+            <div className="grid md:grid-cols-3 gap-6 mt-8">
+              <div className="bg-blue-50 p-4 rounded-xl border border-blue-100">
+                <h3 className="text-gray-500 text-xs font-bold uppercase tracking-wider mb-1">NIM / ID Organisasi</h3>
+                <p className="font-bold text-gray-800">ORG-2023-002</p>
+              </div>
+              <div className="bg-blue-50 p-4 rounded-xl border border-blue-100">
+                <h3 className="text-gray-500 text-xs font-bold uppercase tracking-wider mb-1">Email</h3>
+                <p className="font-bold text-gray-800">senibudaya@univ.ac.id</p>
+              </div>
+              <div className="bg-blue-50 p-4 rounded-xl border border-blue-100">
+                <h3 className="text-gray-500 text-xs font-bold uppercase tracking-wider mb-1">Kontak</h3>
+                <p className="font-bold text-gray-800">0813-4567-8901</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-8">
+          <h3 className="font-bold text-lg text-gray-900 mb-4">Statistik Organisasi</h3>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="text-center p-4 bg-gray-50 rounded-xl">
+              <div className="text-2xl font-bold text-blue-600 mb-1">12</div>
+              <div className="text-xs text-gray-500">Peminjaman Aktif</div>
+            </div>
+            <div className="text-center p-4 bg-gray-50 rounded-xl">
+              <div className="text-2xl font-bold text-green-600 mb-1">45</div>
+              <div className="text-xs text-gray-500">Total Peminjaman</div>
+            </div>
+            <div className="text-center p-4 bg-gray-50 rounded-xl">
+              <div className="text-2xl font-bold text-purple-600 mb-1">0</div>
+              <div className="text-xs text-gray-500">Pelanggaran</div>
+            </div>
+            <div className="text-center p-4 bg-gray-50 rounded-xl">
+              <div className="text-2xl font-bold text-orange-600 mb-1">4.8</div>
+              <div className="text-xs text-gray-500">Rating</div>
+            </div>
+          </div>
+        </div>
+
+        <button 
+          onClick={handleLogout}
+          className="w-full bg-red-50 hover:bg-red-100 text-red-600 font-bold py-4 rounded-2xl border border-red-100 transition-colors flex items-center justify-center gap-2"
+        >
+          <LogOut size={20} />
+          Keluar dari Akun
+        </button>
+      </div>
+    </div>
+  );
+
+  // --- COMPONENT HALAMAN NOTIFIKASI ---
+  const NotificationPage = () => (
+    <div className="pt-28 container mx-auto px-6 pb-20 min-h-screen">
+      <div className="max-w-3xl mx-auto">
+        <div className="flex justify-between items-center mb-8">
+          <h2 className="text-3xl font-extrabold text-gray-900">Notifikasi</h2>
+          <button className="text-sm text-blue-600 font-bold hover:underline">Tandai semua dibaca</button>
+        </div>
+
+        <div className="space-y-4">
+          {notifications.map(notif => (
+            <div key={notif.id} className={`p-5 rounded-2xl border transition-all hover:shadow-md cursor-pointer flex gap-4 ${
+              notif.read ? 'bg-white border-gray-100' : 'bg-blue-50 border-blue-100'
+            }`}>
+              <div className={`w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 ${
+                notif.type === 'success' ? 'bg-green-100 text-green-600' :
+                notif.type === 'warning' ? 'bg-orange-100 text-orange-600' :
+                notif.type === 'info' ? 'bg-blue-100 text-blue-600' :
+                'bg-gray-100 text-gray-600'
+              }`}>
+                {notif.type === 'success' ? <CheckCircle2 size={24} /> :
+                 notif.type === 'warning' ? <AlertTriangle size={24} /> :
+                 notif.type === 'info' ? <BellRing size={24} /> :
+                 <Settings size={24} />}
+              </div>
+              <div className="flex-1">
+                <div className="flex justify-between items-start mb-1">
+                  <h4 className={`font-bold ${notif.read ? 'text-gray-800' : 'text-gray-900'}`}>{notif.title}</h4>
+                  <span className="text-xs text-gray-400 whitespace-nowrap">{notif.time}</span>
+                </div>
+                <p className={`text-sm ${notif.read ? 'text-gray-500' : 'text-gray-700'}`}>{notif.message}</p>
+              </div>
+              {!notif.read && (
+                <div className="w-3 h-3 bg-blue-500 rounded-full mt-2"></div>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+
+  // --- COMPONENT HALAMAN CHAT ---
+  const ChatPage = () => {
+    const currentChat = chats.find(c => c.id === activeChat);
+
+    return (
+      <div className="pt-24 container mx-auto px-4 pb-10 h-screen flex flex-col">
+        <div className="flex-1 bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden flex">
+          {/* Sidebar List Chat */}
+          <div className="w-1/3 border-r border-gray-100 flex flex-col bg-gray-50">
+            <div className="p-4 border-b border-gray-200 bg-white">
+              <h2 className="font-bold text-lg text-gray-800 mb-4">Pesan</h2>
+              <div className="relative">
+                <input 
+                  type="text" 
+                  placeholder="Cari kontak..." 
+                  className="w-full bg-gray-100 text-sm px-4 py-2 pl-9 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                <Search size={14} className="absolute left-3 top-2.5 text-gray-400" />
+              </div>
+            </div>
+            <div className="overflow-y-auto flex-1">
+              {chats.map(chat => (
+                <div 
+                  key={chat.id}
+                  onClick={() => setActiveChat(chat.id)}
+                  className={`p-4 flex gap-3 cursor-pointer hover:bg-gray-100 transition-colors ${
+                    activeChat === chat.id ? 'bg-white border-l-4 border-blue-600 shadow-sm' : ''
+                  }`}
+                >
+                  <div className="relative">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold text-sm">
+                      {chat.avatar}
+                    </div>
+                    {chat.status === 'online' && (
+                      <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
+                    )}
+                  </div>
+                  <div className="flex-1 overflow-hidden">
+                    <div className="flex justify-between items-center mb-1">
+                      <h4 className="font-bold text-sm text-gray-900 truncate">{chat.name}</h4>
+                      <span className="text-[10px] text-gray-400">{chat.time}</span>
+                    </div>
+                    <p className="text-xs text-gray-500 truncate">{chat.message}</p>
+                  </div>
+                  {chat.unread > 0 && (
+                    <div className="flex items-center">
+                      <span className="w-5 h-5 bg-red-500 text-white text-[10px] flex items-center justify-center rounded-full font-bold">
+                        {chat.unread}
+                      </span>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Main Chat Area */}
+          <div className="flex-1 flex flex-col bg-white">
+            {/* Header Chat */}
+            <div className="p-4 border-b border-gray-100 flex justify-between items-center bg-white">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold">
+                  {currentChat.avatar}
+                </div>
+                <div>
+                  <h3 className="font-bold text-gray-900">{currentChat.name}</h3>
+                  <div className="flex items-center gap-1.5">
+                    <div className={`w-2 h-2 rounded-full ${currentChat.status === 'online' ? 'bg-green-500' : 'bg-gray-300'}`}></div>
+                    <span className="text-xs text-gray-500 capitalize">{currentChat.status}</span>
+                  </div>
+                </div>
+              </div>
+              <button className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full">
+                <MoreVertical size={20} />
+              </button>
+            </div>
+
+            {/* Messages Area */}
+            <div className="flex-1 overflow-y-auto p-6 space-y-4 bg-gray-50/50">
+              <div className="flex justify-center mb-4">
+                <span className="text-[10px] text-gray-400 bg-gray-100 px-3 py-1 rounded-full">Hari ini</span>
+              </div>
+              
+              {/* Pesan Lawan */}
+              <div className="flex gap-3 max-w-[80%]">
+                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-xs font-bold flex-shrink-0 mt-1">
+                  {currentChat.avatar}
+                </div>
+                <div>
+                  <div className="bg-white p-3 rounded-2xl rounded-tl-none shadow-sm text-sm text-gray-700 border border-gray-100">
+                    {currentChat.message}
+                  </div>
+                  <span className="text-[10px] text-gray-400 mt-1 ml-1">{currentChat.time}</span>
+                </div>
+              </div>
+
+              {/* Pesan Sendiri */}
+              <div className="flex gap-3 max-w-[80%] ml-auto flex-row-reverse">
+                <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 text-xs font-bold flex-shrink-0 mt-1">
+                  US
+                </div>
+                <div>
+                  <div className="bg-blue-600 p-3 rounded-2xl rounded-tr-none shadow-md text-sm text-white">
+                    Baik, terima kasih informasinya kak.
+                  </div>
+                  <div className="flex justify-end gap-1 mt-1 mr-1">
+                    <span className="text-[10px] text-gray-400">09:42</span>
+                    <Check size={12} className="text-blue-500" />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Input Area */}
+            <div className="p-4 border-t border-gray-100 bg-white">
+              <div className="flex items-center gap-2 bg-gray-50 p-2 rounded-xl border border-gray-200">
+                <button className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
+                  <Paperclip size={20} />
+                </button>
+                <input 
+                  type="text" 
+                  placeholder="Ketik pesan..." 
+                  className="flex-1 bg-transparent text-sm focus:outline-none text-gray-700"
+                />
+                <button className="p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-lg shadow-blue-200">
+                  <Send size={18} />
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   // --- MAIN COMPONENTS ---
 
   const Navbar = () => (
@@ -643,19 +917,27 @@ const SistemPeminjamanLogistikKampus = () => {
           </div>
           
           <div className="flex items-center gap-3">
-            <button className="p-2 text-gray-500 hover:bg-gray-100 rounded-full relative transition-colors">
+            <button 
+              onClick={() => setActivePage('notifications')}
+              className={`p-2 rounded-full relative transition-colors ${activePage === 'notifications' ? 'bg-blue-100 text-blue-600' : 'text-gray-500 hover:bg-gray-100'}`}
+            >
               <BellRing size={20} />
               <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
             </button>
-            <button className="p-2 text-gray-500 hover:bg-gray-100 rounded-full transition-colors">
+            <button 
+              onClick={() => setActivePage('chat')}
+              className={`p-2 rounded-full transition-colors ${activePage === 'chat' ? 'bg-blue-100 text-blue-600' : 'text-gray-500 hover:bg-gray-100'}`}
+            >
               <MessageSquare size={20} />
             </button>
-            <div className="flex items-center gap-2 bg-gray-100 rounded-full px-3 py-1 cursor-pointer hover:bg-gray-200 transition-colors" onClick={() => setIsLoggedIn(false)}>
+            <div 
+              className={`flex items-center gap-2 rounded-full px-3 py-1 cursor-pointer transition-colors border ${activePage === 'profile' ? 'bg-blue-50 border-blue-200' : 'bg-gray-100 border-transparent hover:bg-gray-200'}`} 
+              onClick={() => setActivePage('profile')}
+            >
               <div className="w-8 h-8 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center font-bold text-sm border border-blue-200">
                 UKM
               </div>
               <span className="text-sm font-medium text-gray-700">UKM Seni Budaya</span>
-              <LogIn size={14} className="ml-1 text-gray-400" />
             </div>
           </div>
         </div>
@@ -1474,10 +1756,11 @@ const SistemPeminjamanLogistikKampus = () => {
         </>
       )}
 
-      {/* RENDER HALAMAN ORGANISASI */}
-      {activePage === 'organizations' && (
-          <OrganizationPage />
-      )}
+      {/* RENDER HALAMAN LAINNYA */}
+      {activePage === 'organizations' && <OrganizationPage />}
+      {activePage === 'profile' && <ProfilePage />}
+      {activePage === 'notifications' && <NotificationPage />}
+      {activePage === 'chat' && <ChatPage />}
 
       {activePage === 'activity' && (
         <div className="pt-32 container mx-auto px-6 pb-20 min-h-screen">
@@ -1738,59 +2021,62 @@ const SistemPeminjamanLogistikKampus = () => {
       )}
 
       {/* Footer */}
-      <footer className="bg-white border-t border-gray-200 py-16 mt-20">
-        <div className="container mx-auto px-6">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            <div>
-              <h4 className="font-extrabold text-xl text-blue-950 mb-4">
-                Logistik<span className="text-blue-600">Kampus</span>
-              </h4>
-              <p className="text-sm text-gray-500 leading-relaxed">
-                Sistem peminjaman logistik terintegrasi untuk lingkungan kampus. 
-                Mendukung UKM, himpunan, dan organisasi lainnya dengan teknologi terdepan.
-              </p>
-            </div>
-            <div>
-              <h5 className="font-bold text-gray-800 mb-4">Fitur Utama</h5>
-              <ul className="text-sm text-gray-500 space-y-2">
-                <li className="hover:text-blue-600 cursor-pointer transition-colors">Paket Bundling</li>
-                <li className="hover:text-blue-600 cursor-pointer transition-colors">Double Handshake Protocol</li>
-                <li className="hover:text-blue-600 cursor-pointer transition-colors">Notifikasi Real-time</li>
-                <li className="hover:text-blue-600 cursor-pointer transition-colors">Tracking Peminjaman</li>
-              </ul>
-            </div>
-            <div>
-              <h5 className="font-bold text-gray-800 mb-4">Bantuan</h5>
-              <ul className="text-sm text-gray-500 space-y-2">
-                <li className="hover:text-blue-600 cursor-pointer transition-colors">Pusat Bantuan</li>
-                <li className="hover:text-blue-600 cursor-pointer transition-colors">Syarat & Ketentuan</li>
-                <li className="hover:text-blue-600 cursor-pointer transition-colors">Kebijakan Privasi</li>
-                <li className="hover:text-blue-600 cursor-pointer transition-colors">FAQ</li>
-              </ul>
-            </div>
-            <div>
-              <h5 className="font-bold text-gray-800 mb-4">Kontak</h5>
-              <p className="text-sm text-gray-500 mb-2">logistik@kampus.ac.id</p>
-              <p className="text-sm text-gray-500 mb-2">(021) 1234-5678</p>
-              <p className="text-sm text-gray-500">Gedung Rektorat Lt. 2</p>
-              <div className="flex gap-4 mt-4">
-                <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center cursor-pointer hover:bg-gray-200 transition-colors">
-                  <span className="text-xs font-bold text-gray-600">f</span>
+      {/* Jangan tampilkan footer di halaman chat agar full height */}
+      {activePage !== 'chat' && (
+        <footer className="bg-white border-t border-gray-200 py-16 mt-20">
+            <div className="container mx-auto px-6">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                <h4 className="font-extrabold text-xl text-blue-950 mb-4">
+                    Logistik<span className="text-blue-600">Kampus</span>
+                </h4>
+                <p className="text-sm text-gray-500 leading-relaxed">
+                    Sistem peminjaman logistik terintegrasi untuk lingkungan kampus. 
+                    Mendukung UKM, himpunan, dan organisasi lainnya dengan teknologi terdepan.
+                </p>
                 </div>
-                <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center cursor-pointer hover:bg-gray-200 transition-colors">
-                  <span className="text-xs font-bold text-gray-600">in</span>
+                <div>
+                <h5 className="font-bold text-gray-800 mb-4">Fitur Utama</h5>
+                <ul className="text-sm text-gray-500 space-y-2">
+                    <li className="hover:text-blue-600 cursor-pointer transition-colors">Paket Bundling</li>
+                    <li className="hover:text-blue-600 cursor-pointer transition-colors">Double Handshake Protocol</li>
+                    <li className="hover:text-blue-600 cursor-pointer transition-colors">Notifikasi Real-time</li>
+                    <li className="hover:text-blue-600 cursor-pointer transition-colors">Tracking Peminjaman</li>
+                </ul>
                 </div>
-                <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center cursor-pointer hover:bg-gray-200 transition-colors">
-                  <span className="text-xs font-bold text-gray-600">ig</span>
+                <div>
+                <h5 className="font-bold text-gray-800 mb-4">Bantuan</h5>
+                <ul className="text-sm text-gray-500 space-y-2">
+                    <li className="hover:text-blue-600 cursor-pointer transition-colors">Pusat Bantuan</li>
+                    <li className="hover:text-blue-600 cursor-pointer transition-colors">Syarat & Ketentuan</li>
+                    <li className="hover:text-blue-600 cursor-pointer transition-colors">Kebijakan Privasi</li>
+                    <li className="hover:text-blue-600 cursor-pointer transition-colors">FAQ</li>
+                </ul>
                 </div>
-              </div>
+                <div>
+                <h5 className="font-bold text-gray-800 mb-4">Kontak</h5>
+                <p className="text-sm text-gray-500 mb-2">logistik@kampus.ac.id</p>
+                <p className="text-sm text-gray-500 mb-2">(021) 1234-5678</p>
+                <p className="text-sm text-gray-500">Gedung Rektorat Lt. 2</p>
+                <div className="flex gap-4 mt-4">
+                    <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center cursor-pointer hover:bg-gray-200 transition-colors">
+                    <span className="text-xs font-bold text-gray-600">f</span>
+                    </div>
+                    <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center cursor-pointer hover:bg-gray-200 transition-colors">
+                    <span className="text-xs font-bold text-gray-600">in</span>
+                    </div>
+                    <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center cursor-pointer hover:bg-gray-200 transition-colors">
+                    <span className="text-xs font-bold text-gray-600">ig</span>
+                    </div>
+                </div>
+                </div>
             </div>
-          </div>
-          <div className="border-t border-gray-100 mt-12 pt-8 text-center text-sm text-gray-400">
-            © 2023 Sistem Peminjaman Logistik Kampus. All rights reserved.
-          </div>
-        </div>
-      </footer>
+            <div className="border-t border-gray-100 mt-12 pt-8 text-center text-sm text-gray-400">
+                © 2023 Sistem Peminjaman Logistik Kampus. All rights reserved.
+            </div>
+            </div>
+        </footer>
+      )}
     </div>
   );
 };
