@@ -5,7 +5,7 @@ import {
   AlertCircle, Clock, ArrowRightLeft, BoxSelect, X, AlertTriangle, 
   BellRing, Menu, Grid, List, Users, Calendar, Shield, FileText,
   Truck, RotateCcw, Eye, Star, Download, Upload, Handshake, Phone, Mail, Globe,
-  LogIn, Lock, ArrowRight, Loader2
+  LogIn, Lock, ArrowRight, Loader2, Check, XCircle
 } from 'lucide-react';
 
 const SistemPeminjamanLogistikKampus = () => {
@@ -27,6 +27,9 @@ const SistemPeminjamanLogistikKampus = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [loanStep, setLoanStep] = useState(1);
   const [returnStep, setReturnStep] = useState(1);
+
+  // --- STATE HALAMAN AKTIVITAS (New Feature) ---
+  const [activityTab, setActivityTab] = useState('borrowing'); // 'borrowing' | 'lending'
 
   // --- HANDLER LOGIN ---
   const handleLogin = (e) => {
@@ -186,6 +189,46 @@ const SistemPeminjamanLogistikKampus = () => {
         { step: 4, name: "Barang Diambil", status: "pending", date: null }
       ]
     }
+  ]);
+
+  // --- DATA PERMINTAAN MASUK (ADMIN MODE) ---
+  const [incomingTransactions, setIncomingTransactions] = useState([
+    {
+        id: 'REQ-2023-0055',
+        borrower: "Himpunan Mahasiswa Komputer",
+        itemName: "Kostum Tari Tradisional",
+        items: [{ name: "Kostum Tari Tradisional", quantity: 4 }],
+        price: 400000,
+        status: "waiting_approval",
+        image: "👘",
+        startDate: "2023-12-01",
+        endDate: "2023-12-03",
+        duration: 2,
+        handshakeSteps: [
+          { step: 1, name: "Pengajuan Dikirim", status: "completed", date: "2023-11-28 09:00" },
+          { step: 2, name: "Persetujuan Admin", status: "pending", date: null },
+          { step: 3, name: "Konfirmasi Peminjam", status: "pending", date: null },
+          { step: 4, name: "Barang Diambil", status: "pending", date: null }
+        ]
+      },
+      {
+        id: 'REQ-2023-0056',
+        borrower: "UKM Paduan Suara",
+        itemName: "Set Alat Musik Tradisional",
+        items: [{ name: "Gamelan Mini", quantity: 1 }, { name: "Angklung Set", quantity: 1 }],
+        price: 250000,
+        status: "active",
+        image: "🎭",
+        startDate: "2023-11-25",
+        endDate: "2023-11-28",
+        duration: 3,
+        handshakeSteps: [
+          { step: 1, name: "Pengajuan Dikirim", status: "completed", date: "2023-11-24 10:00" },
+          { step: 2, name: "Persetujuan Admin", status: "completed", date: "2023-11-24 11:00" },
+          { step: 3, name: "Konfirmasi Peminjam", status: "completed", date: "2023-11-24 13:00" },
+          { step: 4, name: "Barang Diambil", status: "completed", date: "2023-11-25 09:00" }
+        ]
+      }
   ]);
 
   const items = [
@@ -419,6 +462,25 @@ const SistemPeminjamanLogistikKampus = () => {
       } : t
     ));
     setReturnStep(1);
+  };
+
+  // --- ADMIN HANDLERS (New) ---
+  const handleApproveRequest = (id) => {
+    setIncomingTransactions(prev => prev.map(trx => 
+        trx.id === id ? {
+            ...trx,
+            status: 'active',
+            handshakeSteps: trx.handshakeSteps.map(step => 
+                step.step === 2 ? { ...step, status: 'completed', date: new Date().toISOString() } : step
+            )
+        } : trx
+    ));
+  };
+
+  const handleRejectRequest = (id) => {
+    setIncomingTransactions(prev => prev.map(trx => 
+        trx.id === id ? { ...trx, status: 'rejected' } : trx
+    ));
   };
 
   // --- HALAMAN LOGIN ---
@@ -1419,121 +1481,258 @@ const SistemPeminjamanLogistikKampus = () => {
 
       {activePage === 'activity' && (
         <div className="pt-32 container mx-auto px-6 pb-20 min-h-screen">
-          <div className="flex items-center gap-4 mb-8">
-            <h2 className="text-3xl font-extrabold text-gray-900">Aktivitas Peminjaman</h2>
-            <span className="bg-blue-100 text-blue-700 px-4 py-2 rounded-full text-sm font-bold">
-              {transactions.length} Transaksi
-            </span>
-          </div>
-
-          <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
-            {transactions.map((trx) => (
-              <div key={trx.id} className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all">
-                <div className="flex gap-6 mb-6">
-                  <div className="w-20 h-20 bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl flex items-center justify-center text-3xl border border-gray-100 flex-shrink-0">
-                    {trx.image}
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex justify-between items-start mb-2">
-                      <div>
-                        <h3 className="font-bold text-lg text-gray-900">{trx.itemName}</h3>
-                        <p className="text-sm text-gray-500">
-                          Milik: <span className="font-bold">{trx.owner}</span> • ID: {trx.id}
-                        </p>
-                      </div>
-                      <span className={`px-3 py-1 rounded-full text-xs font-bold ${
-                        trx.status === 'active' ? 'bg-green-100 text-green-700' :
-                        trx.status === 'waiting_approval' ? 'bg-yellow-100 text-yellow-700' :
-                        trx.status === 'return_pending' ? 'bg-blue-100 text-blue-700' :
-                        'bg-gray-100 text-gray-500'
-                      }`}>
-                        {trx.status === 'active' ? 'Sedang Dipinjam' : 
-                         trx.status === 'waiting_approval' ? 'Menunggu Persetujuan' : 
-                         trx.status === 'return_pending' ? 'Pengembalian Diproses' : 'Selesai'}
-                      </span>
-                    </div>
-                    
-                    {/* Progress Bar */}
-                    {trx.status === 'active' && (
-                      <div className="mt-4">
-                        <div className="flex justify-between text-xs text-gray-500 mb-1">
-                          <span>Waktu Peminjaman</span>
-                          <span>{trx.progress}%</span>
-                        </div>
-                        <div className="w-full bg-gray-200 rounded-full h-2">
-                          <div 
-                            className={`h-2 rounded-full ${
-                              trx.progress > 80 ? 'bg-red-500' : 'bg-green-500'
-                            }`}
-                            style={{ width: `${trx.progress}%` }}
-                          ></div>
-                        </div>
-                        <div className="flex justify-between text-xs text-gray-500 mt-1">
-                          <span>{new Date(trx.startDate).toLocaleDateString('id-ID')}</span>
-                          <span>{new Date(trx.endDate).toLocaleDateString('id-ID')}</span>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                {/* Items List */}
-                <div className="mb-6">
-                  <h4 className="font-bold text-gray-900 mb-3 text-sm">Detail Barang:</h4>
-                  <div className="space-y-2">
-                    {trx.items.map((item, idx) => (
-                      <div key={idx} className="flex justify-between items-center text-sm bg-gray-50 p-2 rounded-lg">
-                        <span className="text-gray-700">{item.name}</span>
-                        <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded-full text-xs font-bold">
-                          {item.quantity}x
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Handshake Protocol */}
-                <HandshakeProtocol transaction={trx} />
-
-                {/* Action Buttons */}
-                {trx.status === 'active' && (
-                  <div className="flex gap-3 mt-6 pt-6 border-t border-gray-100">
-                    <button 
-                      onClick={() => handleReturnRequest(trx)}
-                      className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl transition-colors flex items-center justify-center gap-2"
-                    >
-                      <RotateCcw size={16} />
-                      Ajukan Pengembalian
-                    </button>
-                    <button className="px-6 py-3 border border-gray-300 text-gray-700 rounded-xl font-bold hover:bg-gray-50 transition-colors">
-                      Perpanjang
-                    </button>
-                  </div>
-                )}
-
-                {trx.status === 'waiting_approval' && (
-                  <div className="mt-6 pt-6 border-t border-gray-100">
-                    <button className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl transition-colors">
-                      Batalkan Pengajuan
-                    </button>
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-
-          {transactions.length === 0 && (
-            <div className="text-center py-20">
-              <div className="text-8xl mb-6">📦</div>
-              <h3 className="text-2xl font-bold text-gray-400 mb-2">Belum ada transaksi</h3>
-              <p className="text-gray-500 mb-6">Mulai pinjam barang untuk melihat aktivitas di sini</p>
-              <button 
-                onClick={() => setActivePage('home')}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-xl font-bold transition-colors"
-              >
-                Jelajahi Katalog
-              </button>
+          <div className="flex items-center justify-between gap-4 mb-8">
+            <div>
+                <h2 className="text-3xl font-extrabold text-gray-900 mb-2">Aktivitas Logistik</h2>
+                <p className="text-gray-500">Pantau peminjaman dan kelola permintaan masuk.</p>
             </div>
+            {/* Tab Switcher */}
+            <div className="bg-white p-1 rounded-xl shadow-sm border border-gray-100 flex">
+                <button 
+                    onClick={() => setActivityTab('borrowing')}
+                    className={`px-6 py-2.5 rounded-lg text-sm font-bold transition-all ${
+                        activityTab === 'borrowing' 
+                        ? 'bg-blue-600 text-white shadow-md' 
+                        : 'text-gray-500 hover:bg-gray-50'
+                    }`}
+                >
+                    Peminjaman Saya
+                </button>
+                <button 
+                    onClick={() => setActivityTab('lending')}
+                    className={`px-6 py-2.5 rounded-lg text-sm font-bold transition-all flex items-center gap-2 ${
+                        activityTab === 'lending' 
+                        ? 'bg-blue-600 text-white shadow-md' 
+                        : 'text-gray-500 hover:bg-gray-50'
+                    }`}
+                >
+                    Kelola Peminjaman
+                    {incomingTransactions.filter(t => t.status === 'waiting_approval').length > 0 && (
+                        <span className="bg-red-500 text-white text-[10px] w-5 h-5 flex items-center justify-center rounded-full">
+                            {incomingTransactions.filter(t => t.status === 'waiting_approval').length}
+                        </span>
+                    )}
+                </button>
+            </div>
+          </div>
+
+          {/* CONTENT: PEMINJAMAN SAYA */}
+          {activityTab === 'borrowing' && (
+            <>
+                <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
+                    {transactions.map((trx) => (
+                    <div key={trx.id} className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all">
+                        <div className="flex gap-6 mb-6">
+                        <div className="w-20 h-20 bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl flex items-center justify-center text-3xl border border-gray-100 flex-shrink-0">
+                            {trx.image}
+                        </div>
+                        <div className="flex-1">
+                            <div className="flex justify-between items-start mb-2">
+                            <div>
+                                <h3 className="font-bold text-lg text-gray-900">{trx.itemName}</h3>
+                                <p className="text-sm text-gray-500">
+                                Milik: <span className="font-bold">{trx.owner}</span> • ID: {trx.id}
+                                </p>
+                            </div>
+                            <span className={`px-3 py-1 rounded-full text-xs font-bold ${
+                                trx.status === 'active' ? 'bg-green-100 text-green-700' :
+                                trx.status === 'waiting_approval' ? 'bg-yellow-100 text-yellow-700' :
+                                trx.status === 'return_pending' ? 'bg-blue-100 text-blue-700' :
+                                'bg-gray-100 text-gray-500'
+                            }`}>
+                                {trx.status === 'active' ? 'Sedang Dipinjam' : 
+                                trx.status === 'waiting_approval' ? 'Menunggu Persetujuan' : 
+                                trx.status === 'return_pending' ? 'Pengembalian Diproses' : 'Selesai'}
+                            </span>
+                            </div>
+                            
+                            {/* Progress Bar */}
+                            {trx.status === 'active' && (
+                            <div className="mt-4">
+                                <div className="flex justify-between text-xs text-gray-500 mb-1">
+                                <span>Waktu Peminjaman</span>
+                                <span>{trx.progress}%</span>
+                                </div>
+                                <div className="w-full bg-gray-200 rounded-full h-2">
+                                <div 
+                                    className={`h-2 rounded-full ${
+                                    trx.progress > 80 ? 'bg-red-500' : 'bg-green-500'
+                                    }`}
+                                    style={{ width: `${trx.progress}%` }}
+                                ></div>
+                                </div>
+                                <div className="flex justify-between text-xs text-gray-500 mt-1">
+                                <span>{new Date(trx.startDate).toLocaleDateString('id-ID')}</span>
+                                <span>{new Date(trx.endDate).toLocaleDateString('id-ID')}</span>
+                                </div>
+                            </div>
+                            )}
+                        </div>
+                        </div>
+
+                        {/* Items List */}
+                        <div className="mb-6">
+                        <h4 className="font-bold text-gray-900 mb-3 text-sm">Detail Barang:</h4>
+                        <div className="space-y-2">
+                            {trx.items.map((item, idx) => (
+                            <div key={idx} className="flex justify-between items-center text-sm bg-gray-50 p-2 rounded-lg">
+                                <span className="text-gray-700">{item.name}</span>
+                                <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded-full text-xs font-bold">
+                                {item.quantity}x
+                                </span>
+                            </div>
+                            ))}
+                        </div>
+                        </div>
+
+                        {/* Handshake Protocol */}
+                        <HandshakeProtocol transaction={trx} />
+
+                        {/* Action Buttons */}
+                        {trx.status === 'active' && (
+                        <div className="flex gap-3 mt-6 pt-6 border-t border-gray-100">
+                            <button 
+                            onClick={() => handleReturnRequest(trx)}
+                            className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl transition-colors flex items-center justify-center gap-2"
+                            >
+                            <RotateCcw size={16} />
+                            Ajukan Pengembalian
+                            </button>
+                            <button className="px-6 py-3 border border-gray-300 text-gray-700 rounded-xl font-bold hover:bg-gray-50 transition-colors">
+                            Perpanjang
+                            </button>
+                        </div>
+                        )}
+
+                        {trx.status === 'waiting_approval' && (
+                        <div className="mt-6 pt-6 border-t border-gray-100">
+                            <button className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl transition-colors">
+                            Batalkan Pengajuan
+                            </button>
+                        </div>
+                        )}
+                    </div>
+                    ))}
+                </div>
+
+                {transactions.length === 0 && (
+                    <div className="text-center py-20">
+                    <div className="text-8xl mb-6">📦</div>
+                    <h3 className="text-2xl font-bold text-gray-400 mb-2">Belum ada transaksi</h3>
+                    <p className="text-gray-500 mb-6">Mulai pinjam barang untuk melihat aktivitas di sini</p>
+                    <button 
+                        onClick={() => setActivePage('home')}
+                        className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-xl font-bold transition-colors"
+                    >
+                        Jelajahi Katalog
+                    </button>
+                    </div>
+                )}
+            </>
+          )}
+
+          {/* CONTENT: KELOLA PEMINJAMAN (ADMIN) */}
+          {activityTab === 'lending' && (
+            <>
+                <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
+                    {incomingTransactions.map((trx) => (
+                    <div key={trx.id} className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all">
+                        <div className="flex gap-6 mb-6">
+                        <div className="w-20 h-20 bg-gradient-to-br from-green-50 to-teal-50 rounded-xl flex items-center justify-center text-3xl border border-gray-100 flex-shrink-0">
+                            {trx.image}
+                        </div>
+                        <div className="flex-1">
+                            <div className="flex justify-between items-start mb-2">
+                            <div>
+                                <h3 className="font-bold text-lg text-gray-900">{trx.itemName}</h3>
+                                <p className="text-sm text-gray-500 flex items-center gap-1 mt-1">
+                                    <User size={14} /> Peminjam: <span className="font-bold text-blue-600">{trx.borrower}</span>
+                                </p>
+                            </div>
+                            <span className={`px-3 py-1 rounded-full text-xs font-bold ${
+                                trx.status === 'active' ? 'bg-green-100 text-green-700' :
+                                trx.status === 'waiting_approval' ? 'bg-orange-100 text-orange-700' :
+                                trx.status === 'rejected' ? 'bg-red-100 text-red-700' :
+                                'bg-gray-100 text-gray-500'
+                            }`}>
+                                {trx.status === 'active' ? 'Disetujui' : 
+                                trx.status === 'waiting_approval' ? 'Perlu Persetujuan' : 
+                                trx.status === 'rejected' ? 'Ditolak' : 'Selesai'}
+                            </span>
+                            </div>
+                            
+                            <div className="flex justify-between text-xs text-gray-500 mt-2 bg-gray-50 p-2 rounded-lg">
+                                <span className="flex items-center gap-1"><Clock size={12}/> Durasi: {trx.duration} Hari</span>
+                                <span>{new Date(trx.startDate).toLocaleDateString('id-ID')} - {new Date(trx.endDate).toLocaleDateString('id-ID')}</span>
+                            </div>
+                        </div>
+                        </div>
+
+                        {/* Items List */}
+                        <div className="mb-6">
+                        <h4 className="font-bold text-gray-900 mb-3 text-sm">Detail Permintaan:</h4>
+                        <div className="space-y-2">
+                            {trx.items.map((item, idx) => (
+                            <div key={idx} className="flex justify-between items-center text-sm bg-gray-50 p-2 rounded-lg">
+                                <span className="text-gray-700">{item.name}</span>
+                                <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded-full text-xs font-bold">
+                                {item.quantity}x
+                                </span>
+                            </div>
+                            ))}
+                        </div>
+                        </div>
+
+                        {/* Handshake Protocol */}
+                        <HandshakeProtocol transaction={trx} />
+
+                        {/* Action Buttons for Admin */}
+                        {trx.status === 'waiting_approval' && (
+                        <div className="flex gap-3 mt-6 pt-6 border-t border-gray-100">
+                            <button 
+                                onClick={() => handleApproveRequest(trx.id)}
+                                className="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-xl transition-colors flex items-center justify-center gap-2"
+                            >
+                                <Check size={18} />
+                                Setujui (ACC)
+                            </button>
+                            <button 
+                                onClick={() => handleRejectRequest(trx.id)}
+                                className="flex-1 bg-red-100 hover:bg-red-200 text-red-700 font-bold py-3 rounded-xl transition-colors flex items-center justify-center gap-2"
+                            >
+                                <XCircle size={18} />
+                                Tolak
+                            </button>
+                        </div>
+                        )}
+
+                        {trx.status === 'active' && (
+                            <div className="mt-6 pt-6 border-t border-gray-100 text-center">
+                                <p className="text-green-600 text-sm font-bold flex items-center justify-center gap-2">
+                                    <CheckCircle2 size={16} /> Barang sedang dipinjam
+                                </p>
+                            </div>
+                        )}
+                        
+                        {trx.status === 'rejected' && (
+                            <div className="mt-6 pt-6 border-t border-gray-100 text-center">
+                                <p className="text-red-500 text-sm font-bold flex items-center justify-center gap-2">
+                                    <XCircle size={16} /> Permintaan ditolak
+                                </p>
+                            </div>
+                        )}
+                    </div>
+                    ))}
+                </div>
+
+                {incomingTransactions.length === 0 && (
+                    <div className="text-center py-20 bg-white rounded-3xl border border-dashed border-gray-300">
+                        <div className="text-6xl mb-4">📭</div>
+                        <h3 className="text-xl font-bold text-gray-400">Tidak ada permintaan masuk</h3>
+                        <p className="text-gray-500 text-sm">Semua aman terkendali!</p>
+                    </div>
+                )}
+            </>
           )}
         </div>
       )}
