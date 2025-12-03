@@ -4,14 +4,22 @@ import {
   ChevronLeft, Building2, CheckCircle2, Package, LockKeyhole, 
   AlertCircle, Clock, ArrowRightLeft, BoxSelect, X, AlertTriangle, 
   BellRing, Menu, Grid, List, Users, Calendar, Shield, FileText,
-  Truck, RotateCcw, Eye, Star, Download, Upload, Handshake, Phone, Mail, Globe
+  Truck, RotateCcw, Eye, Star, Download, Upload, Handshake, Phone, Mail, Globe,
+  LogIn, Lock, ArrowRight, Loader2
 } from 'lucide-react';
 
 const SistemPeminjamanLogistikKampus = () => {
+  // --- STATE AUTHENTICATION ---
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [loginLoading, setLoginLoading] = useState(false);
+  const [loginForm, setLoginForm] = useState({ username: '', password: '' });
+  const [loginError, setLoginError] = useState('');
+
+  // --- STATE UTAMA APLIKASI ---
   const [activePage, setActivePage] = useState('home');
   const [selectedItem, setSelectedItem] = useState(null);
   const [selectedBundle, setSelectedBundle] = useState(null);
-  const [selectedOrg, setSelectedOrg] = useState(null); // State baru untuk detail organisasi
+  const [selectedOrg, setSelectedOrg] = useState(null);
   const [categoryFilter, setCategoryFilter] = useState('Semua');
   const [showReminder, setShowReminder] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -20,18 +28,41 @@ const SistemPeminjamanLogistikKampus = () => {
   const [loanStep, setLoanStep] = useState(1);
   const [returnStep, setReturnStep] = useState(1);
 
-  // DETEKSI SCROLL UNTUK NAVBAR
+  // --- HANDLER LOGIN ---
+  const handleLogin = (e) => {
+    e.preventDefault();
+    setLoginError('');
+    
+    if (!loginForm.username || !loginForm.password) {
+      setLoginError('Harap isi NIM/Email dan Password');
+      return;
+    }
+
+    setLoginLoading(true);
+
+    // Simulasi API Call
+    setTimeout(() => {
+      setLoginLoading(false);
+      setIsLoggedIn(true);
+      // Reset scroll saat masuk
+      window.scrollTo(0, 0);
+    }, 1500);
+  };
+
+  // --- DETEKSI SCROLL UNTUK NAVBAR ---
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // SIMULASI NOTIFIKASI
+  // --- SIMULASI NOTIFIKASI (Hanya jalan setelah login) ---
   useEffect(() => {
-    const timer = setTimeout(() => setShowReminder(true), 5000);
-    return () => clearTimeout(timer);
-  }, []);
+    if (isLoggedIn) {
+      const timer = setTimeout(() => setShowReminder(true), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [isLoggedIn]);
 
   // --- DATA DUMMY ---
   const organizations = [
@@ -325,7 +356,7 @@ const SistemPeminjamanLogistikKampus = () => {
   ];
 
   const categories = ["Semua", "Bundling", "Elektronik", "Audio", "Event", "Furnitur"];
-  
+   
   const filteredItems = categoryFilter === "Semua" 
     ? items 
     : categoryFilter === "Bundling" 
@@ -390,7 +421,111 @@ const SistemPeminjamanLogistikKampus = () => {
     setReturnStep(1);
   };
 
-  // --- COMPONENTS ---
+  // --- HALAMAN LOGIN ---
+  const LoginPage = () => (
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-900 to-indigo-900 font-sans p-6">
+      <div className="bg-white rounded-3xl shadow-2xl overflow-hidden w-full max-w-5xl flex flex-col md:flex-row h-full md:h-[600px] animate-in fade-in zoom-in duration-500">
+        
+        {/* Left Side: Illustration / Branding */}
+        <div className="md:w-1/2 bg-blue-50 p-10 flex flex-col justify-between relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-blue-100 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob"></div>
+          <div className="absolute -bottom-8 -left-8 w-64 h-64 bg-purple-100 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob animation-delay-2000"></div>
+          
+          <div className="relative z-10">
+            <h1 className="text-3xl font-extrabold text-blue-950 mb-2">
+              Peminjaman<span className="text-blue-600">Kampus</span>
+            </h1>
+            <p className="text-gray-500 text-sm">Sistem Terintegrasi Logistik Mahasiswa</p>
+          </div>
+
+          <div className="relative z-10 text-center my-8 md:my-0">
+             <div className="text-8xl mb-4 animate-bounce-slow inline-block">🎓</div>
+             <h2 className="text-2xl font-bold text-gray-800 mb-2">Kebutuhan Acara?</h2>
+             <p className="text-gray-600 px-8">Pinjam sound system, tenda, hingga proyektor untuk kegiatan UKM dan Himpunan dengan mudah.</p>
+          </div>
+
+          <div className="relative z-10 flex gap-2 justify-center">
+             <div className="w-2 h-2 rounded-full bg-blue-600"></div>
+             <div className="w-2 h-2 rounded-full bg-blue-200"></div>
+             <div className="w-2 h-2 rounded-full bg-blue-200"></div>
+          </div>
+        </div>
+
+        {/* Right Side: Login Form */}
+        <div className="md:w-1/2 p-10 flex flex-col justify-center bg-white relative">
+          <div className="max-w-md mx-auto w-full">
+            <div className="mb-8 text-center md:text-left">
+              <h2 className="text-3xl font-bold text-gray-900 mb-2">Selamat Datang! 👋</h2>
+              <p className="text-gray-500">Silakan login menggunakan akun SSO Kampus.</p>
+            </div>
+
+            {loginError && (
+              <div className="mb-6 p-4 bg-red-50 border border-red-100 text-red-600 rounded-xl text-sm flex items-center gap-2 animate-pulse">
+                <AlertCircle size={18} /> {loginError}
+              </div>
+            )}
+
+            <form onSubmit={handleLogin} className="space-y-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">NIM / Email Kampus</label>
+                <div className="relative">
+                  <User className="absolute left-4 top-3.5 text-gray-400" size={20} />
+                  <input 
+                    type="text" 
+                    className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                    placeholder="Contoh: 12345678"
+                    value={loginForm.username}
+                    onChange={(e) => setLoginForm({...loginForm, username: e.target.value})}
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                <div className="relative">
+                  <LockKeyhole className="absolute left-4 top-3.5 text-gray-400" size={20} />
+                  <input 
+                    type="password" 
+                    className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                    placeholder="••••••••"
+                    value={loginForm.password}
+                    onChange={(e) => setLoginForm({...loginForm, password: e.target.value})}
+                  />
+                </div>
+                <div className="flex justify-end mt-2">
+                  <a href="#" className="text-xs font-medium text-blue-600 hover:text-blue-700">Lupa Password?</a>
+                </div>
+              </div>
+
+              <button 
+                type="submit" 
+                disabled={loginLoading}
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 rounded-xl transition-all transform hover:-translate-y-0.5 active:scale-[0.98] shadow-lg shadow-blue-200 flex items-center justify-center gap-2"
+              >
+                {loginLoading ? (
+                  <Loader2 className="animate-spin" size={20} />
+                ) : (
+                  <>
+                    Masuk Sekarang <ArrowRight size={20} />
+                  </>
+                )}
+              </button>
+            </form>
+
+            <div className="mt-8 text-center text-sm text-gray-500">
+              Belum punya akun organisasi? <a href="#" className="font-bold text-blue-600 hover:underline">Daftar disini</a>
+            </div>
+          </div>
+          
+          <div className="mt-auto pt-6 text-center text-xs text-gray-400">
+            © 2023 Sistem Peminjaman Logistik Kampus v1.0
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  // --- MAIN COMPONENTS ---
 
   const Navbar = () => (
     <nav className={`fixed top-0 w-full z-40 transition-all duration-300 ${isScrolled ? 'bg-white shadow-lg py-3' : 'bg-white/95 backdrop-blur-md py-5 border-b border-gray-100'}`}>
@@ -453,11 +588,12 @@ const SistemPeminjamanLogistikKampus = () => {
             <button className="p-2 text-gray-500 hover:bg-gray-100 rounded-full transition-colors">
               <MessageSquare size={20} />
             </button>
-            <div className="flex items-center gap-2 bg-gray-100 rounded-full px-3 py-1 cursor-pointer hover:bg-gray-200 transition-colors">
+            <div className="flex items-center gap-2 bg-gray-100 rounded-full px-3 py-1 cursor-pointer hover:bg-gray-200 transition-colors" onClick={() => setIsLoggedIn(false)}>
               <div className="w-8 h-8 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center font-bold text-sm border border-blue-200">
                 UKM
               </div>
               <span className="text-sm font-medium text-gray-700">UKM Seni Budaya</span>
+              <LogIn size={14} className="ml-1 text-gray-400" />
             </div>
           </div>
         </div>
@@ -1008,7 +1144,7 @@ const SistemPeminjamanLogistikKampus = () => {
   );
 
   // --- HALAMAN ORGANISASI BARU ---
-  
+   
   const OrganizationPage = () => {
     // Tampilan Detail Organisasi
     if (selectedOrg) {
@@ -1169,9 +1305,14 @@ const SistemPeminjamanLogistikKampus = () => {
   };
 
   // --- MAIN RENDER ---
+  // Jika belum login, tampilkan LoginPage
+  if (!isLoggedIn) {
+    return <LoginPage />;
+  }
 
+  // Jika sudah login, tampilkan aplikasi utama
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 font-sans text-gray-800">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 font-sans text-gray-800 animate-in fade-in duration-500">
       <Navbar />
       
       {showReminder && <ReminderToast />}
@@ -1306,8 +1447,8 @@ const SistemPeminjamanLogistikKampus = () => {
                         trx.status === 'return_pending' ? 'bg-blue-100 text-blue-700' :
                         'bg-gray-100 text-gray-500'
                       }`}>
-                        {trx.status === 'active' ? 'Sedang Dipinjam' :
-                         trx.status === 'waiting_approval' ? 'Menunggu Persetujuan' :
+                        {trx.status === 'active' ? 'Sedang Dipinjam' : 
+                         trx.status === 'waiting_approval' ? 'Menunggu Persetujuan' : 
                          trx.status === 'return_pending' ? 'Pengembalian Diproses' : 'Selesai'}
                       </span>
                     </div>
