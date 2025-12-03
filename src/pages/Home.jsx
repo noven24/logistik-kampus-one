@@ -10,15 +10,15 @@ import {
 
 const SistemPeminjamanLogistikKampus = () => {
   // --- STATE AUTHENTICATION ---
-  // UPDATED: Default true agar langsung masuk (bypass login)
+  // Default true agar langsung masuk (bypass login)
   const [isLoggedIn, setIsLoggedIn] = useState(true);
   const [loginLoading, setLoginLoading] = useState(false);
   const [loginForm, setLoginForm] = useState({ username: '', password: '' });
   const [loginError, setLoginError] = useState('');
 
   // --- STATE UTAMA APLIKASI ---
-  // UPDATED: Default 'home' agar langsung ke halaman Beranda utama
-  const [activePage, setActivePage] = useState('home');
+  // UPDATED: Default 'chat' agar langsung ke halaman Chat
+  const [activePage, setActivePage] = useState('chat');
   const [selectedItem, setSelectedItem] = useState(null);
   const [selectedBundle, setSelectedBundle] = useState(null);
   const [selectedOrg, setSelectedOrg] = useState(null);
@@ -30,7 +30,7 @@ const SistemPeminjamanLogistikKampus = () => {
   const [loanStep, setLoanStep] = useState(1);
   const [returnStep, setReturnStep] = useState(1);
 
-  // --- STATE HALAMAN AKTIVITAS (New Feature) ---
+  // --- STATE HALAMAN AKTIVITAS ---
   const [activityTab, setActivityTab] = useState('borrowing'); // 'borrowing' | 'lending'
 
   // --- DATA DUMMY NOTIFIKASI ---
