@@ -17,8 +17,8 @@ const SistemPeminjamanLogistikKampus = () => {
   const [loginError, setLoginError] = useState('');
 
   // --- STATE UTAMA APLIKASI ---
-  // UPDATED: Default 'organizations' agar langsung ke halaman Organisasi
-  const [activePage, setActivePage] = useState('organizations');
+  // UPDATED: Default 'notifications' agar langsung ke halaman Notifikasi
+  const [activePage, setActivePage] = useState('notifications');
   const [selectedItem, setSelectedItem] = useState(null);
   const [selectedBundle, setSelectedBundle] = useState(null);
   const [selectedOrg, setSelectedOrg] = useState(null);
